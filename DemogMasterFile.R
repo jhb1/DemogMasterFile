@@ -26,18 +26,16 @@ library(tidyverse)
 
 
 # input/output paths ----
-path.basic <- str_c("C:/Users",
-                    str_sub(getwd(), str_locate(getwd(), "C:/Users/")[2], str_locate(getwd(), "/D")[1]),
-                    "Dropbox")
-# path.basic.sp <- "C:/Users/jbeise/UNICEF/DA-Mortality and Demographics - Migration and Displacement - Documents/Migration and Displacement"
-path.basic.sp <- "C:/Users/jbeise/OneDrive - UNICEF (1)/Migration and Displacement"
+user.profile <- Sys.getenv("USERPROFILE")
+path.basic <- if_else(str_detect(user.profile, "jbeise"),
+                      file.path(user.profile, 'OneDrive - UNICEF (1)/Migration and Displacement/Data/'),
+                      path.basic <- file.path(user.profile, 'OneDrive - UNICEF/Migration and Displacement/Data/') )
 
+input <- path.basic
+input.unicef <- file.path(path.basic, "UNICEF")
+input.wpp <- file.path(path.basic, "UNPD/WPP2022")
 
-# sharepoint
-input <-  file.path(path.basic.sp, "Data")
-#  input <- file.path(path.basic, "Data")
-
-output <- "C:/Users/jbeise/OneDrive - UNICEF (1)/Downloads_OneDrive/#Output"
+# output <- "C:/Users/jbeise/OneDrive - UNICEF (1)/Downloads_OneDrive/#Output"
 
 
 # Notes to regions ----
@@ -64,5 +62,10 @@ wpp.pop.age.master <- wpp.age %>%
               select(area.id, year, age, pop.male.thsd = pop.thsd),
             by = c("area.id", "year", "age"))
 
-save(wpp.pop.age.master, file = file.path(output, "wpp.pop.age.master.Rdata"))
-write_csv(wpp.pop.age.master, file = file.path(output, "wpp.pop.age.master.csv"))
+# checks ---
+wpp.pop.age.master %>% 
+  filter(iso3 == "XKX")
+
+# write out ---
+save(wpp.pop.age.master, file = "output/wpp.pop.age.master.Rdata")
+write_csv(wpp.pop.age.master, file = "output/wpp.pop.age.master.csv")
